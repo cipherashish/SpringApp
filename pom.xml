@@ -12,7 +12,7 @@
 	<artifactId>springapp</artifactId>
 	<version>${BUILD_NUMBER}</version>
 	<packaging>war</packaging>
-	<name>demo</name>
+	<name>Sample</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
