@@ -13,7 +13,12 @@ public class WelcomeController {
 			
 	@RequestMapping("/")
 	public String index() {
-		System.out.println("AppCon-WEB");
+		//System.out.println("AppCon-WEB");
+		return "index";
+	}
+	@RequestMapping("/index")
+	public String index_2() {
+		//System.out.println("AppCon-WEB");
 		return "index";
 	}
 	
