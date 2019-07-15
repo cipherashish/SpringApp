@@ -11,9 +11,6 @@ public class DemoApplication extends ServletInitializer{
 	public static void main(String[] args) {
 		ApplicationContext ctx =SpringApplication.run(DemoApplication.class, args);
 	}
-		@Override
-		  protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-		      return builder.sources(DemoApplication.class);
-		  }
+		
 	}
 
