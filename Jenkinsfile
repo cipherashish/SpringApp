@@ -32,7 +32,8 @@ pipeline{
          stage ('Uploading  to nexus'){
             steps{
              withCredentials([usernamePassword(credentialsId: 'Ashish_nexus', passwordVariable: 'pass', usernameVariable: 'usr')]) {
-     sh label: 'uploading war file to nexus', script: 'curl -u $usr:$pass --upload-file target/springapp-${BUILD_NUMBER}.war http://3.14.251.87:8081/nexus/content/repositories/devopstraining/Ashish_Nexus/springapp-${BUILD_NUMBER}.war'
+     sh label: '', script:'curl -u $userId:$pass http://ec2-18-224-182-74.us-east-2.compute.amazonaws.com:8080/manager/text/undeploy?path=/Ashish_webapp'
+                 sh label: 'uploading war file to nexus', script: 'curl -u $usr:$pass --upload-file target/springapp-${BUILD_NUMBER}.war http://3.14.251.87:8081/nexus/content/repositories/devopstraining/Ashish_Nexus/springapp-${BUILD_NUMBER}.war'
 }
             
         }
