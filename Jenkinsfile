@@ -11,7 +11,7 @@ pipeline{
                 ])
                 }
             }
-        }
+        }     
      stage ('Build & Test'){
             steps{
                 sh "mvn clean install"
@@ -27,7 +27,7 @@ pipeline{
             steps {
                sh "mvn sonar:sonar -Dsonar.host.url=http://3.14.251.87:9000"
             }
-        }
+        }   //uploading war file to nexus
          stage ('Uploading  to nexus'){
             steps{
              withCredentials([usernamePassword(credentialsId: 'Ashish_nexus', passwordVariable: 'pass', usernameVariable: 'usr')]) {
@@ -35,17 +35,24 @@ pipeline{
 }
             
         }
-         }
+         } // Deoplying war file to tomcat
         stage('Deployment'){
         steps{
             withCredentials([usernamePassword(credentialsId: 'devops-tomcat', passwordVariable: 'pass', usernameVariable: 'userId')]) {
            sh label: '', script:'curl -u $userId:$pass http://ec2-18-224-182-74.us-east-2.compute.amazonaws.com:8080/manager/text/undeploy?path=/Ashish_webapp'
           sh label: '', script: 'curl -u  $userId:$pass --upload-file target/springapp-${BUILD_NUMBER}.war http://ec2-18-224-182-74.us-east-2.compute.amazonaws.com:8080/manager/text/deploy?config=file:/var/lib/tomcat8/springapp-${BUILD_NUMBER}.war\\&path=/Ashish_webapp'
+              }
+           }
         }
-
-    }}
-        
-      }
+      }      // Sending notification to Slack 
+      post {
+    success {
+      slackSend (color: '#006400', message: "SuCcEsSfUl: Job '${JOB_NAME} [${BUILD_NUMBER}]' (${BUILD_URL})")
+    }
+    failure {
+      slackSend (color: '#800000', message: "BrEaKdOwN: Job '${JOB_NAME} [${BUILD_NUMBER}]' (${BUILD_URL})")
+    }
+  }
 }
        
        
