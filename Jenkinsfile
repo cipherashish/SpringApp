@@ -3,12 +3,11 @@ pipeline{
     stages{
         stage('Checkout'){
             steps{
-                withCredentials([string(credentialsId: 'ASHISH_WEB', variable: 'git')]) {
-                echo "My password is '${git}'!"
+                withCredentials([string(credentialsId: 'ASHISH_WEB', variable: 'GIT')]) {
                 checkout([$class: 'GitSCM',
-                branches: [[name: 'origin/dprocess']],
+                branches: [[name: 'origin/master']],
                 extensions: [[$class: 'WipeWorkspace']],
-                userRemoteConfigs: [[url: "${git}"]]
+                userRemoteConfigs: [[url: "${GIT}"]]
                 ])
                 }
             }
@@ -26,14 +25,13 @@ pipeline{
            scannerHome=tool 'sonar scanner'
        }
             steps {
-                sh "mvn sonar:sonar -Dsonar.host.url=http://3.14.251.87:9000"
+               sh "mvn sonar:sonar -Dsonar.host.url=http://3.14.251.87:9000"
             }
         }
          stage ('Uploading  to nexus'){
             steps{
              withCredentials([usernamePassword(credentialsId: 'Ashish_nexus', passwordVariable: 'pass', usernameVariable: 'usr')]) {
-     sh label: '', script:'curl -u $userId:$pass http://ec2-18-224-182-74.us-east-2.compute.amazonaws.com:8080/manager/text/undeploy?path=/Ashish_webapp'
-                 sh label: 'uploading war file to nexus', script: 'curl -u $usr:$pass --upload-file target/springapp-${BUILD_NUMBER}.war http://3.14.251.87:8081/nexus/content/repositories/devopstraining/Ashish_Nexus/springapp-${BUILD_NUMBER}.war'
+     sh label: 'uploading war file to nexus', script: 'curl -u $usr:$pass --upload-file target/springapp-${BUILD_NUMBER}.war http://3.14.251.87:8081/nexus/content/repositories/devopstraining/Ashish_Nexus/springapp-${BUILD_NUMBER}.war'
 }
             
         }
@@ -41,6 +39,7 @@ pipeline{
         stage('Deployment'){
         steps{
             withCredentials([usernamePassword(credentialsId: 'devops-tomcat', passwordVariable: 'pass', usernameVariable: 'userId')]) {
+           sh label: '', script:'curl -u $userId:$pass http://ec2-18-224-182-74.us-east-2.compute.amazonaws.com:8080/manager/text/undeploy?path=/Ashish_webapp'
           sh label: '', script: 'curl -u  $userId:$pass --upload-file target/springapp-${BUILD_NUMBER}.war http://ec2-18-224-182-74.us-east-2.compute.amazonaws.com:8080/manager/text/deploy?config=file:/var/lib/tomcat8/springapp-${BUILD_NUMBER}.war\\&path=/Ashish_webapp'
         }
 
